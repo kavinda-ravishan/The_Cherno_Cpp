@@ -5,6 +5,7 @@
 
 # New Ignores
 .vscode
+*.exe
 
 # User-specific files
 *.rsuser
