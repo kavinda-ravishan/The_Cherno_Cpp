@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <functional>
+#include <algorithm>
 
 void ForEach(const std::vector<int> &vec, void (*callback)(int))
 {
@@ -49,6 +50,11 @@ int main()
     { std::cout << num << std::endl; };
 
     ForEach(vec, lambda);
+
+    auto it = std::find_if(vec.begin(), vec.end(), [](int val)
+                           { return val > 4; });
+
+    std::cout << "it : " << *it << std::endl;
 
     return 0;
 }
