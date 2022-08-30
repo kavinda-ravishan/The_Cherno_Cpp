@@ -2,42 +2,21 @@
 #include <string>
 #include <chrono>
 #include <cmath>
+#include <thread>
+#include "Instrumentor.h"
 
-class Timer
-{
-public:
-    Timer(const char* name):m_Name(name), m_Stopped(false)
-    {
-        m_StartTimePoint = std::chrono::high_resolution_clock::now();
-    }
-
-    void Stop()
-    {
-        auto endTimePoint = std::chrono::high_resolution_clock::now();
-
-        long long start = std::chrono::time_point_cast<std::chrono::milliseconds>(m_StartTimePoint).time_since_epoch().count();
-        long long end = std::chrono::time_point_cast<std::chrono::milliseconds>(endTimePoint).time_since_epoch().count();
-
-        std::cout<< m_Name << ": "<<(end-start)<<"ms\n";
-        m_Stopped = true;
-    }
-
-    ~Timer()
-    {
-        if(!m_Stopped)
-        {
-            Stop();
-        }
-    }
-
-private:
-    const char* m_Name;
-    bool m_Stopped;
-    std::chrono::time_point<std::chrono::steady_clock> m_StartTimePoint;
-};
+#define PROFILING 1
+#if PROFILING
+#define PROFILE_SCOPE(name) InstrumentationTimer timer##__LINE__(name)
+#define PROFILE_FUNCTION() PROFILE_SCOPE(__FUNCSIG__)
+#else
+#define PROFILE_SCOPE(name)
+#define PROFILE_FUNCTION()
+#endif
 
 void function1()
 {
+    PROFILE_FUNCTION();
     for(int i=0;i<1000;i++)
     {
         std::cout<<"#"<<i<<std::endl;
@@ -46,6 +25,7 @@ void function1()
 
 void function2()
 {
+    PROFILE_FUNCTION();
     for(int i=0;i<1000;i++)
     {
         std::cout<<"#"<<sqrt(i)<<std::endl;
@@ -53,10 +33,20 @@ void function2()
 }
 
 
+void RunBenchMarks()
+{
+    PROFILE_FUNCTION();
+    std::thread t(function1);
+    function2();
+ 
+    t.join();
+}
+
 int main()
 {
-    function1();
-    function2();
+    Instrumentor::Get().BeginSession("profile");
+    RunBenchMarks();
+    Instrumentor::Get().EndSession();
 
     return 0;
 }
