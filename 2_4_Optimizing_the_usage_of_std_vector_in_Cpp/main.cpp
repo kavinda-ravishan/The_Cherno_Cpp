@@ -15,7 +15,7 @@ struct Vertex
 
 int main()
 {
-    std::cout << "Not potimized\n";
+    std::cout << "Not Optimized\n";
     std::vector<Vertex> vec1;
 
     vec1.push_back(Vertex(1, 2, 3));
@@ -23,7 +23,7 @@ int main()
     vec1.push_back(Vertex(7, 8, 9));
     std::cout << "\n";
 
-    std::cout << "Potimized\n";
+    std::cout << "Optimized\n";
     std::vector<Vertex> vec2;
     vec2.reserve(3);
 
